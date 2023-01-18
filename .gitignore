@@ -2,8 +2,21 @@
 # Files already tracked by Git are not affected.
 # See: https://git-scm.com/docs/gitignore
 
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
 ## Python ##
 __pycache__
 .mypy_cache
 .python-version
 .venv
+
+# Test binary, built with `go test -c`
+*.test
+
+# Environment variables
+.env
