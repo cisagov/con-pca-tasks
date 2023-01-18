@@ -12,7 +12,7 @@ updates:
     schedule:
       interval: "weekly"
     # ignore:
-    #   # Managed by cisagov/skeleton-generic
+    #   # Managed by cisagov/con-pca-tasks
     #   - dependency-name: actions/cache
     #   - dependency-name: actions/checkout
     #   - dependency-name: actions/setup-go
