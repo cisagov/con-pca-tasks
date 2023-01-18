@@ -34,8 +34,8 @@ repos:
     rev: v0.5.0
     hooks:
       - id: go-fmt
-      - id: no-go-testing
       - id: go-unit-tests
+      - id: no-go-testing
 
   # Text file hooks
   - repo: https://github.com/igorshubovych/markdownlint-cli
