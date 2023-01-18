@@ -1,23 +1,28 @@
-# con-pca-tasks #
+# Con-PCA Tasks #
 
 [![GitHub Build Status](https://github.com/cisagov/con-pca-tasks/workflows/build/badge.svg)](https://github.com/cisagov/con-pca-tasks/actions)
 
-This is a generic skeleton project that can be used to quickly get a
-new [cisagov](https://github.com/cisagov) GitHub project started.
-This skeleton project contains [licensing information](LICENSE), as
-well as [pre-commit hooks](https://pre-commit.com) and
-[GitHub Actions](https://github.com/features/actions) configurations
-appropriate for the major languages that we use.
+## Description ##
 
-In many cases you will instead want to use one of the more specific
-skeleton projects derived from this one.
+This repo contains the tasks portion for Con-PCA, Continuous Phishing
+Assessment. This application is reponsible for executing scheduled tasks for
+Con-PCA at scale.
 
-## New Repositories from a Skeleton ##
+## Con-PCA Repositories ##
 
-Please see our [Project Setup guide](https://github.com/cisagov/development-guide/tree/develop/project_setup)
-for step-by-step instructions on how to start a new repository from
-a skeleton. This will save you time and effort when configuring a
-new repository!
+- [con-pca-api](https://github.com/cisagov/con-pca-api)
+- [con-pca-web](https://github.com/cisagov/con-pca-web)
+- [con-pca-cicd](https://github.com/cisagov/con-pca-cicd)
+
+## Commands ##
+
+Run application
+
+- `make run`
+
+Test application
+
+- `make test`
 
 ## Contributing ##
 
