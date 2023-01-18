@@ -11,7 +11,7 @@ run:
 
 # target: test - run application tests
 test:
-	go test -v
+	go test -v ./...
 
 # target: tidy - add missing necessary modules and remove unused modules
 tidy:
