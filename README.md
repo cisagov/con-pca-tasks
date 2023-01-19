@@ -8,11 +8,11 @@ This repo contains the tasks portion for Con-PCA, Continuous Phishing
 Assessment. This application is reponsible for executing scheduled tasks for
 Con-PCA at scale.
 
-## Con-PCA Repositories ##
+## Related Con-PCA Repositories ##
 
 - [con-pca-api](https://github.com/cisagov/con-pca-api)
-- [con-pca-web](https://github.com/cisagov/con-pca-web)
 - [con-pca-cicd](https://github.com/cisagov/con-pca-cicd)
+- [con-pca-web](https://github.com/cisagov/con-pca-web)
 
 ## Commands ##
 
