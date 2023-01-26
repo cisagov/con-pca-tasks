@@ -128,8 +128,6 @@ jobs:
             ${{ hashFiles('go.sum') }}"
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
-      - name: Install dependencies
-        run: go mod download
       - name: Build executable file
         run: go build -v ./...
       - name: Run tests

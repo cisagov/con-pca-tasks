@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/cisagov/con-pca-tasks/controllers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 	mux.HandleFunc("/", controllers.HealthCheckHandler)
 
 	port := ":8080"

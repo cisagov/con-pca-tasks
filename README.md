@@ -1,12 +1,13 @@
 # Con-PCA Tasks #
 
 [![GitHub Build Status](https://github.com/cisagov/con-pca-tasks/workflows/build/badge.svg)](https://github.com/cisagov/con-pca-tasks/actions)
+[![CodeQL](https://github.com/cisagov/con-pca-tasks/workflows/CodeQL/badge.svg)](https://github.com/cisagov/con-pca-tasks/actions/workflows/codeql-analysis.yml)
 
 ## Description ##
 
-This repo contains the tasks portion for Con-PCA, Continuous Phishing
-Assessment. This application is reponsible for executing scheduled tasks for
-Con-PCA at scale.
+This project contains the tasks portion for Continuous Phishing Campaign
+Assessment (Con-PCA). This application is reponsible for executing scheduled
+tasks for Con-PCA at scale.
 
 ## Related Con-PCA Repositories ##
 
@@ -14,15 +15,17 @@ Con-PCA at scale.
 - [con-pca-cicd](https://github.com/cisagov/con-pca-cicd)
 - [con-pca-web](https://github.com/cisagov/con-pca-web)
 
-## Commands ##
+### Running the application ###
 
-Run application
+```console
+make run
+```
 
-- `make run`
+### Testing the application ###
 
-Test application
-
-- `make test`
+```console
+make test
+```
 
 ## Contributing ##
 
