@@ -100,16 +100,21 @@ jobs:
         if: env.RUN_TMATE
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ["1.18", "1.19"]
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.19
-
-      - name: Build
+          go-version: ${{ matrix.go-version }}
+      - name: Install dependencies
+        run: go mod download
+      - name: Build executable file
         run: go build -v ./...
-
-      - name: Test
+      - name: Run tests
         run: go test -v ./...
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        if: env.RUN_TMATE
