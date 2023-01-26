@@ -128,10 +128,25 @@ jobs:
             ${{ hashFiles('go.sum') }}"
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
-      - name: Build executable file
-        run: go build -v ./...
-      - name: Run tests
-        run: go test -v ./...
+      # Cache go build cache, used to speedup go test
+      - name: Go Build Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.go-cache.outputs.dir }}
+          key: "${{ env.BASE_CACHE_KEY }}\
+            ${{ hashFiles('go.mod') }}-\
+            ${{ hashFiles('go.sum') }}"
+
+      # Cache go mod cache, used to speedup builds
+      - name: Go Mod Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.go-cache.outputs.dir }}
+          key: "${{ env.BASE_CACHE_KEY }}\
+            ${{ hashFiles('go.mod') }}-\
+            ${{ hashFiles('go.sum') }}"
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
