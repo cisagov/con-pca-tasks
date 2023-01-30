@@ -69,5 +69,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release create v0.0.1 con-pca-tasks \
+          gh release create v0.0.1 \
+          con-pca-tasks-linux-amd64 \
+          con-pca-tasks-linux-arm64 \
+          con-pca-tasks-osx-amd64 \
+          con-pca-tasks-osx-arm64 \
           -t "con-pca-tasks v0.0.1" --generate-notes
