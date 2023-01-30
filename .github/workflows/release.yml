@@ -58,11 +58,10 @@ jobs:
       - name: Mkdir releases
         run: mkdir releases
       - name: Build ${{ matrix.os }}
-        run: go build -o releases/tasks-${{ matrix.os }}
+        run: go build -o releases/cpa-tasks-${{ matrix.os }}
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
-          CGO_ENABLED: 1
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
         with:
