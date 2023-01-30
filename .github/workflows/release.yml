@@ -64,15 +64,20 @@ jobs:
         with:
           name: releases
           path: releases/*
-      - name: Create release
+      - name: Upload Archives to Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
+          UPLOAD_URL: ${{ github.event.release.upload_url }}
+          API_HEADER: "Accept: application/vnd.github.v3+json"
+          AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
         run: |
-          gh release create v0.0.1 \
-          con-pca-tasks-linux-amd64 \
-          con-pca-tasks-linux-arm64 \
-          con-pca-tasks-osx-amd64 \
-          con-pca-tasks-osx-arm64 \
-          -t "con-pca-tasks v0.0.1" --generate-notes
-        working-directory: releases/
+          UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
+          for FILE in releases/*
+          do
+            echo "Uploading ${FILE}";
+            curl \
+              -H "${API_HEADER}" \
+              -H "${AUTH_HEADER}" \
+              -H "Content-Type: $(file -b --mime-type ${FILE})" \
+              --data-binary "@${FILE}" \
+              "${UPLOAD_URL}?name=$(basename ${FILE})";
+          done
