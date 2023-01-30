@@ -19,6 +19,19 @@ jobs:
           - "linux-arm64"
           - "osx-amd64"
           - "osx-arm64"
+        include:
+          - os: linux-amd64
+            goos: linux
+            arch: amd64
+          - os: linux-arm64
+            goos: linux
+            arch: arm64
+          - os: osx-amd64
+            goos: darwin
+            arch: amd64
+          - os: osx-arm64
+            goos: darwin
+            arch: arm64
     steps:
       - uses: actions/checkout@v3
       - id: setup-go
@@ -44,12 +57,12 @@ jobs:
             ${{ env.BASE_CACHE_KEY }}
       - name: Mkdir releases
         run: mkdir releases
-      - name: Build application
-        run: |
-          GOOS=darwin GOARCH=arm64 \
-          go build -o releases/con-pca-tasks-${{ env.build-type }}
+      - name: Build ${{ matrix.os }}
+        run: go build -o releases/tasks-${{ matrix.os }}
         env:
-          build-type: ${{ matrix.build-type }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 1
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -59,8 +72,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Upload to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Download to artifacts
+        uses: actions/download-artifact@v3
         with:
           name: releases
           path: releases/*
