@@ -8,9 +8,12 @@ on:
     # tags:
     #   - "v*"
 
+env:
+  RUN_TMATE: ${{ secrets.RUN_TMATE }}
+
 jobs:
   build:
-    name: release
+    name: go-build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,16 +23,16 @@ jobs:
           - "osx-amd64"
           - "osx-arm64"
         include:
-          - os: linux-amd64
+          - bin: cpa-linux-amd64
             goos: linux
             arch: amd64
-          - os: linux-arm64
+          - os: cpa-linux-arm64
             goos: linux
             arch: arm64
-          - os: osx-amd64
+          - bin: cpa-osx-amd64
             goos: darwin
             arch: amd64
-          - os: osx-arm64
+          - bin: cpa-osx-arm64
             goos: darwin
             arch: arm64
     steps:
@@ -55,35 +58,55 @@ jobs:
             ${{ hashFiles('go.sum') }}"
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
-      - name: Mkdir releases
-        run: mkdir releases
       - name: Build ${{ matrix.os }}
-        run: go build -o releases/cpa-tasks-${{ matrix.os }}
+        run: go build -o ${{ matrix.bin }}
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: releases
-          path: releases/*
+          path: ${{ matrix.bin }}
   release:
+    name: go-release
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
       - name: Download to artifacts
         uses: actions/download-artifact@v3
         with:
-          name: releases
-          path: releases/*
+          path: bin
+      - name: Create Release
+        uses: actions/github-script@v6
+        env:
+          VERSION: "v0.0.1"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {
+              const response = await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: "con-pca-tasks ${VERSION}",
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: "${VERSION}",
+              });
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
       - name: Upload Archives to Release
         env:
-          UPLOAD_URL: ${{ github.event.release.upload_url }}
+          UPLOAD_URL: ${{ env.RELEASE_UPLOAD_URL }}
           API_HEADER: "Accept: application/vnd.github.v3+json"
           AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
         run: |
           UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
-          for FILE in releases/*
+          for FILE in bin/*
           do
             echo "Uploading ${FILE}";
             curl \
@@ -93,3 +116,6 @@ jobs:
               --data-binary "@${FILE}" \
               "${UPLOAD_URL}?name=$(basename ${FILE})";
           done
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        if: env.RUN_TMATE
