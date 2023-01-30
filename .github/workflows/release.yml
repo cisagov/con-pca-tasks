@@ -75,3 +75,4 @@ jobs:
           con-pca-tasks-osx-amd64 \
           con-pca-tasks-osx-arm64 \
           -t "con-pca-tasks v0.0.1" --generate-notes
+        working-directory: releases/
