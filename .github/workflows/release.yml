@@ -47,8 +47,8 @@ jobs:
       - name: Build application
         run: |
           GOOS=darwin GOARCH=arm64 \
-          go build -o releases/con-pca-tasks-${{ build-type }}
-        with:
+          go build -o releases/con-pca-tasks-${{ env.build-type }}
+        env:
           build-type: ${{ matrix.build-type }}
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
