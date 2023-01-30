@@ -10,9 +10,14 @@ on:
 
 jobs:
   build:
-    name: GoReleaser build
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        build-type:
+          - "linux-amd64"
+          - "linux-arm64"
+          - "osx-amd64"
+          - "osx-arm64"
     steps:
       - uses: actions/checkout@v3
       - id: setup-go
@@ -36,11 +41,32 @@ jobs:
             ${{ hashFiles('go.sum') }}"
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
+      - name: Mkdir releases
+        run: mkdir releases
       - name: Build application
-        run: GOOS=darwin GOARCH=arm64 go build -o con-pca-tasks
+        run: |
+          GOOS=darwin GOARCH=arm64 \
+          go build -o releases/con-pca-tasks-${{ build-type }}
+        with:
+          build-type: ${{ matrix.build-type }}
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: releases
+          path: releases/*
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: releases
+          path: releases/*
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release create v0.0.1 con-pca-tasks
+          gh release create v0.0.1 con-pca-tasks \
+          -t "con-pca-tasks v0.0.1" --generate-notes
