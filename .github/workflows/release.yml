@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        build-type:
-          - "linux-amd64"
-          - "linux-arm64"
-          - "osx-amd64"
-          - "osx-arm64"
+        bin:
+          - cpa-linux-amd64
+          - cpa-linux-arm64
+          - cpa-osx-amd64
+          - cpa-osx-arm64
         include:
           - bin: cpa-linux-amd64
             goos: linux
@@ -66,6 +66,7 @@ jobs:
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
         with:
+          name: ${{ matrix.os }}
           path: ${{ matrix.bin }}
   release:
     name: go-release
@@ -88,11 +89,11 @@ jobs:
               const response = await github.rest.repos.createRelease({
                 draft: false,
                 generate_release_notes: true,
-                name: "con-pca-tasks ${VERSION}",
+                name: "con-pca-tasks",
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
-                tag_name: "${VERSION}",
+                tag_name: process.env.VERSION,
               });
               core.exportVariable('RELEASE_ID', response.data.id);
               core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
@@ -106,15 +107,18 @@ jobs:
           AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
         run: |
           UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
-          for FILE in bin/*
+          for each in bin/*
           do
-            echo "Uploading ${FILE}";
-            curl \
-              -H "${API_HEADER}" \
-              -H "${AUTH_HEADER}" \
-              -H "Content-Type: $(file -b --mime-type ${FILE})" \
-              --data-binary "@${FILE}" \
-              "${UPLOAD_URL}?name=$(basename ${FILE})";
+            for FILE in $each/*
+            do
+              echo "Uploading ${FILE}";
+              curl \
+                -H "${API_HEADER}" \
+                -H "${AUTH_HEADER}" \
+                -H "Content-Type: $(file -b --mime-type ${FILE})" \
+                --data-binary "@${FILE}" \
+                "${UPLOAD_URL}?name=$(basename ${FILE})";
+            done
           done
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
