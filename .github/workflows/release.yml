@@ -66,16 +66,6 @@ jobs:
         with:
           name: ${{ matrix.os }}
           path: ${{ matrix.bin }}
-  tag:
-    name: go-tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: install autotag binary
-        run: |
-          curl -sL https://git.io/autotag-install | sudo sh -s -- -b /usr/bin
-      - name: increment version
-        run: |
-          autotag
   release:
     name: go-release
     runs-on: ubuntu-latest
@@ -86,10 +76,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: bin
+      - name: Set Tag Version
+        run: echo "VERSION=$(cat ./VERSION)" >> $GITHUB_ENV
       - name: Create Release
         uses: actions/github-script@v6
-        env:
-          VERSION: $(git describe --tags `git rev-list --tags --max-count=1`)
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
