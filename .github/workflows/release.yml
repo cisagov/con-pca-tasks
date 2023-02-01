@@ -3,30 +3,121 @@ name: release
 
 on:
   push:
-    tags:
-      - "*"  # triggers only if push new tag version
+    branches:
+      - develop
+
+env:
+  RUN_TMATE: ${{ secrets.RUN_TMATE }}
 
 jobs:
   build:
-    name: GoReleaser build
+    name: go-build
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        bin:
+          - pca-linux-amd64
+          - pca-linux-arm64
+          - pca-osx-amd64
+          - pca-osx-arm64
+        include:
+          - bin: pca-linux-amd64
+            goos: linux
+            arch: amd64
+          - os: pca-linux-arm64
+            goos: linux
+            arch: arm64
+          - bin: pca-osx-amd64
+            goos: darwin
+            arch: amd64
+          - bin: pca-osx-arm64
+            goos: darwin
+            arch: arm64
     steps:
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - id: setup-go
+        uses: actions/setup-go@v3
         with:
-          fetch-depth: 0  # See: https://goreleaser.com/ci/actions/
-
-      - name: Set up go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.19
-        id: go
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@master
-        with:
-          version: latest
-          args: release --rm-dist
+          go-version: "1.19"
+          cache: true
+      - name: Lookup Go cache directory
+        id: go-cache
+        run: |
+          echo "dir=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_CACHE_KEY: "${{ github.job }}-${{ runner.os }}-\
+            go${{ steps.setup-go.outputs.go-version }}-"
+        with:
+          path: |
+            ${{ steps.go-cache.outputs.dir }}
+          key: "${{ env.BASE_CACHE_KEY }}\
+            ${{ hashFiles('go.mod') }}-\
+            ${{ hashFiles('go.sum') }}"
+          restore-keys: |
+            ${{ env.BASE_CACHE_KEY }}
+      - name: Build ${{ matrix.os }}
+        run: go build -o ${{ matrix.bin }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.arch }}
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: ${{ matrix.bin }}
+  release:
+    name: go-release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download to artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: bin
+      - name: Set Tag Version
+        run: echo "VERSION=$(cat ./VERSION)" >> $GITHUB_ENV
+      - name: Create Release
+        uses: actions/github-script@v6
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {
+              const response = await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: `con-pca-tasks ${process.env.VERSION}`,
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: process.env.VERSION,
+              });
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
+      - name: Upload Archives to Release
+        env:
+          UPLOAD_URL: ${{ env.RELEASE_UPLOAD_URL }}
+          API_HEADER: "Accept: application/vnd.github.v3+json"
+          AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
+          for each in bin/*
+          do
+            for FILE in $each/*
+            do
+              echo "Uploading ${FILE}";
+              curl \
+                -H "${API_HEADER}" \
+                -H "${AUTH_HEADER}" \
+                -H "Content-Type: $(file -b --mime-type ${FILE})" \
+                --data-binary "@${FILE}" \
+                "${UPLOAD_URL}?name=$(basename ${FILE})";
+            done
+          done
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        if: env.RUN_TMATE

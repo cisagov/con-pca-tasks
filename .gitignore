@@ -11,11 +11,14 @@
 # Test binary, built with `go test -c`
 *.test
 
+## Environment variables ##
+.env
+
+## MacOS ##
+.DS_Store
+
 ## Python ##
 __pycache__
 .mypy_cache
 .python-version
 .venv
-
-## Environment variables ##
-.env
