@@ -20,6 +20,11 @@ updates:
       - dependency-name: hashicorp/setup-terraform
       - dependency-name: mxschmitt/action-tmate
 
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
