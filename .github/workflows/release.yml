@@ -11,23 +11,27 @@ env:
 
 jobs:
   build:
-    name: go-build
+    name: go-build ${{ matrix.goos }}-${{ matrix.arch }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - bin: pca-linux-amd64
+          - arch: amd64
+            bin: pca-linux-amd64
             goos: linux
-            arch: amd64
-          - bin: pca-linux-arm64
+
+          - arch: arm64
+            bin: pca-linux-arm64
             goos: linux
-            arch: arm64
-          - bin: pca-osx-amd64
+
+          - arch: amd64
+            bin: pca-osx-amd64
             goos: darwin
-            arch: amd64
-          - bin: pca-osx-arm64
+
+          - arch: arm64
+            bin: pca-osx-arm64
             goos: darwin
-            arch: arm64
+
     steps:
       - uses: actions/checkout@v3
       - id: setup-go
