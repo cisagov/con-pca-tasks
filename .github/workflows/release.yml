@@ -15,16 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        bin:
-          - pca-linux-amd64
-          - pca-linux-arm64
-          - pca-osx-amd64
-          - pca-osx-arm64
         include:
           - bin: pca-linux-amd64
             goos: linux
             arch: amd64
-          - os: pca-linux-arm64
+          - bin: pca-linux-arm64
             goos: linux
             arch: arm64
           - bin: pca-osx-amd64
@@ -56,7 +51,7 @@ jobs:
             ${{ hashFiles('go.sum') }}"
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
-      - name: Build ${{ matrix.os }}
+      - name: Build ${{ matrix.bin }}
         run: go build -o ${{ matrix.bin }}
         env:
           GOOS: ${{ matrix.goos }}
@@ -64,7 +59,7 @@ jobs:
       - name: Upload to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.os }}
+          name: ${{ matrix.bin }}
           path: ${{ matrix.bin }}
   release:
     name: go-release
