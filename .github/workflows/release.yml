@@ -3,8 +3,8 @@ name: release
 
 on:
   push:
-    branches:
-      - develop
+    # branches:
+    #   - develop
 
 env:
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
@@ -76,7 +76,7 @@ jobs:
         with:
           path: bin
       - name: Set Tag Version
-        run: echo "VERSION=$(cat ./VERSION)" >> $GITHUB_ENV
+        run: echo "VERSION=v$(cat ./VERSION)" >> $GITHUB_ENV
       - name: Create Release
         uses: actions/github-script@v6
         with:

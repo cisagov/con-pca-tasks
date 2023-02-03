@@ -9,6 +9,9 @@ import (
 )
 
 func main() {
+	// Print the version and exit if the -version flag is provided
+	version()
+
 	mux := chi.NewRouter()
 	mux.Get("/", controllers.HealthCheckHandler)
 
