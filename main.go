@@ -16,6 +16,6 @@ func main() {
 	mux.Get("/", controllers.HealthCheckHandler)
 
 	port := ":8080"
-	log.Printf("listening on port %s", port)
+	log.Printf("listening on port %s, version %s", port, Version)
 	log.Println(http.ListenAndServe(port, mux))
 }
