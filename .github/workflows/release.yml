@@ -76,9 +76,11 @@ jobs:
         with:
           path: bin
       - name: chmod executable
-        run: chmod +x pca-linux-amd64
+        run: chmod +x bin/pca-linux-amd64/pca-linux-amd64
       - name: Set Tag Version
-        run: echo "VERSION=v$(./bin/pca-linux-amd64 -version)" >> $GITHUB_ENV
+        run: |
+          echo "VERSION=v$(./bin/pca-linux-amd64/pca-linux-amd64 -version)" \
+          >> $GITHUB_ENV
       - name: Create Release
         uses: actions/github-script@v6
         with:
