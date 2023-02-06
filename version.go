@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var Version, _ = os.ReadFile("VERSION")
+var Version = "0.0.1"
 
 func version() {
 	v := flag.Bool("version", false, "prints current app version")
