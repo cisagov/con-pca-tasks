@@ -3,11 +3,11 @@ name: release
 
 on:
   push:
-    # branches:
-    #   - develop
+    branches:
+      - develop
 
 env:
-  RUN_TMATE: true
+  RUN_TMATE: ${{ secrets.RUN_TMATE }}
 
 jobs:
   build:
