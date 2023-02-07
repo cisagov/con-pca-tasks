@@ -19,19 +19,15 @@ jobs:
           - arch: amd64
             bin: pca-linux-amd64
             goos: linux
-
           - arch: arm64
             bin: pca-linux-arm64
             goos: linux
-
           - arch: amd64
             bin: pca-osx-amd64
             goos: darwin
-
           - arch: arm64
             bin: pca-osx-arm64
             goos: darwin
-
     steps:
       - uses: actions/checkout@v3
       - id: setup-go
@@ -75,7 +71,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: bin
-      - name: chmod executable
+      - name: Make retrieved artifact executable
         run: chmod +x bin/pca-linux-amd64/pca-linux-amd64
       - name: Set Tag Version
         run: |
