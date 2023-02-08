@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/cisagov/con-pca-tasks/controllers"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
