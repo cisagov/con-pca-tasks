@@ -77,7 +77,7 @@ jobs:
         run: chmod +x ./${{ env.EXECUTABLE }}
       - name: Set Tag Version
         run: |
-          echo "VERSION=v$($EXECUTABLE -version)" \
+          echo "VERSION=$($EXECUTABLE -version)" \
           >> $GITHUB_ENV
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
@@ -91,11 +91,11 @@ jobs:
               const response = await github.rest.repos.createRelease({
                 draft: false,
                 generate_release_notes: true,
-                name: `con-pca-tasks ${process.env.VERSION}`,
+                name: `con-pca-tasks v${process.env.VERSION}`,
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
-                tag_name: process.env.VERSION,
+                tag_name: `v${process.env.VERSION}`,
               });
               core.exportVariable('RELEASE_ID', response.data.id);
               core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get branch name
-        run: echo "branch=${GITHUB_REF#refs/heads/}"
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: ref
       - name: Echo branch
         run: echo "${{ steps.ref.outputs.branch }}"
@@ -140,4 +140,4 @@ jobs:
           token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
           repository: cisagov/con-pca-tasks-docker
           event-type: deploy
-          client-payload: '{"version": $VERSION}'
+          client-payload: '{"version": "${{ env.VERSION }}" }'
