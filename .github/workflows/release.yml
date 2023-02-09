@@ -3,8 +3,8 @@ name: release
 
 on:
   push:
-    # branches:
-    #   - develop
+    branches:
+      - develop
 
 env:
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
@@ -79,9 +79,6 @@ jobs:
         run: |
           echo "VERSION=$($EXECUTABLE -version)" \
           >> $GITHUB_ENV
-      - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v3
-        if: env.RUN_TMATE
       - name: Create Release
         uses: actions/github-script@v6
         with:
@@ -122,18 +119,28 @@ jobs:
                 "${UPLOAD_URL}?name=$(basename ${FILE})";
             done
           done
-      - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v3
-        if: env.RUN_TMATE
+      - name: Create VERSION.txt
+        run: |
+          echo "$VERSION" > VERSION.txt
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: version
+          path: VERSION.txt
   dispatch:
     needs: release
     runs-on: ubuntu-latest
     steps:
+      - name: Download version
+        uses: actions/download-artifact@v3
+        with:
+          name: version
+      - name: Get Version
+        run: |
+          echo "VERSION=$(cat VERSION.txt)" >> $GITHUB_ENV
       - name: Get branch name
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: ref
-      - name: Echo branch
-        run: echo "${{ steps.ref.outputs.branch }}"
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
@@ -141,3 +148,6 @@ jobs:
           repository: cisagov/con-pca-tasks-docker
           event-type: deploy
           client-payload: '{"version": "${{ env.VERSION }}" }'
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        if: env.RUN_TMATE
