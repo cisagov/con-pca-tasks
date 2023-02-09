@@ -3,8 +3,8 @@ name: release
 
 on:
   push:
-    branches:
-      - develop
+    # branches:
+    #   - develop
 
 env:
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
@@ -126,10 +126,11 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
   dispatch:
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - name: Get branch name
-        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        run: echo "branch=${GITHUB_REF#refs/heads/}"
         id: ref
       - name: Echo branch
         run: echo "${{ steps.ref.outputs.branch }}"
@@ -138,5 +139,5 @@ jobs:
         with:
           token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
           repository: cisagov/con-pca-tasks-docker
-          event-type: deploy-tasks
-          client-payload: '{"version": ${$VERSION}}'
+          event-type: deploy
+          client-payload: '{"version": $VERSION}'
