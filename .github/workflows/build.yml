@@ -132,9 +132,9 @@ jobs:
       - name: Install dependencies
         run: go mod download
       - name: Build application
-        run: go build -v ./...
+        run: CGO_ENABLED=0 go build
       - name: Test application
-        run: go test -v ./...
+        run: go test
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
