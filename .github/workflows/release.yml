@@ -65,6 +65,8 @@ jobs:
     name: go-release
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      version: ${{ steps.get-version.outputs.VERSION }}
     env:
       EXECUTABLE: bin/pca-linux-amd64/pca-linux-amd64
     steps:
@@ -119,35 +121,21 @@ jobs:
                 "${UPLOAD_URL}?name=$(basename ${FILE})";
             done
           done
-      - name: Create VERSION.txt
+      - id: get-version
+        name: Output application version
         run: |
-          echo "$VERSION" > VERSION.txt
-      - name: Upload to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: version
-          path: VERSION.txt
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
   dispatch:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - name: Download version
-        uses: actions/download-artifact@v3
-        with:
-          name: version
-      - name: Get Version
-        run: |
-          echo "VERSION=$(cat VERSION.txt)" >> $GITHUB_ENV
-      - name: Get branch name
-        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-        id: ref
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
           repository: cisagov/con-pca-tasks-docker
           event-type: deploy
-          client-payload: '{"version": "${{ env.VERSION }}" }'
+          client-payload: '{"version": "${{ needs.release.outputs.version }}" }'
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
