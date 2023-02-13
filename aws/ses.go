@@ -24,8 +24,8 @@ type SESEmail struct {
 
 // NewSESEmail returns an initialized SES email context
 func NewSESEmail(to, cc, bcc, subject, body string) *SESEmail {
-	// Load assumed user AWS configuration
-	cfg := AssumedRoleUser()
+	// Load assumed user role AWS configuration
+	cfg := AssumedRoleConfig()
 	// Initialize AWS Simple Email Service Client
 	client = sesv2.NewFromConfig(cfg)
 	return &SESEmail{To: to, Cc: cc, Bcc: bcc, Subject: subject, Body: body}

@@ -16,8 +16,8 @@ var (
 	fromRoleArn = os.Getenv("SES_ASSUME_ROLE_ARN")
 )
 
-// AssumedRoleUser returns an AWS configuration with assumed user credentials
-func AssumedRoleUser() aws.Config {
+// AssumedRoleConfig returns an AWS configuration with assumed user role credentials
+func AssumedRoleConfig() aws.Config {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		log.Println("STS configuration error: ", err.Error())

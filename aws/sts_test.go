@@ -4,12 +4,12 @@ import (
 	"testing"
 )
 
-// TestAssumedRoleUser tests the AssumedRoleUser function
-func TestAssumedRoleUser(t *testing.T) {
+// TestAssumedRoleConfig tests the AssumedRoleConfig function
+func TestAssumedRoleConfig(t *testing.T) {
 	// Redeclare the fromRoleArn variable to avoid using the environment variable
 	fromRoleArn = "arn:aws:iam::123456789012:role/role-name"
 
-	cfg := AssumedRoleUser()
+	cfg := AssumedRoleConfig()
 
 	if cfg.Region != "us-east-1" {
 		t.Errorf("Region should be us-east-1, but got %s", cfg.Region)
