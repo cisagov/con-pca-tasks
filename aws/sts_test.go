@@ -6,6 +6,9 @@ import (
 
 // TestAssumedRoleConfig tests the AssumedRoleConfig function
 func TestAssumedRoleConfig(t *testing.T) {
+	// Set temporary environment variable
+	t.Setenv("AWS_DEFAULT_REGION", "us-east-1")
+
 	// Redeclare the fromRoleArn variable to avoid using the environment variable
 	fromRoleArn = "arn:aws:iam::123456789012:role/role-name"
 
