@@ -3,8 +3,8 @@ name: release
 
 on:
   push:
-    branches:
-      - develop
+    # branches:
+    #   - develop
 
 env:
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
@@ -78,7 +78,7 @@ jobs:
       - name: Make retrieved artifact executable
         run: chmod +x ./${{ env.EXECUTABLE }}
       - id: get-version
-        name: Set Tag Version
+        name: Get the con-pca-tasks Version
         run: |
           echo "version=$($EXECUTABLE -version)" \
           >> $GITHUB_OUTPUT
