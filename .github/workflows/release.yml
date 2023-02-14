@@ -129,10 +129,10 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
-          repository: cisagov/con-pca-tasks-docker
-          event-type: deploy
           client-payload: '{"version": "${{ needs.release.outputs.version }}" }'
+          event-type: deploy
+          repository: cisagov/con-pca-tasks-docker
+          token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
