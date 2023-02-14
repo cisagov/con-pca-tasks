@@ -1,5 +1,6 @@
 .PHONY: help run test tidy
 include .env
+export
 
 # make all - Default Target. Does nothing.
 all:
