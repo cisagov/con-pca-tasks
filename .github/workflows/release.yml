@@ -3,8 +3,8 @@ name: release
 
 on:
   push:
-    # branches:
-    #   - develop
+    branches:
+      - develop
 
 env:
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
@@ -52,7 +52,7 @@ jobs:
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
       - name: Build ${{ matrix.bin }}
-        run: go build -o ${{ matrix.bin }}
+        run: CGO_ENABLED=0 go build -o ${{ matrix.bin }}
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
