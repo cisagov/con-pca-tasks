@@ -52,7 +52,7 @@ jobs:
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
       - name: Build ${{ matrix.bin }}
-        run: go build -o ${{ matrix.bin }}
+        run: CGO_ENABLED=0 go build -o ${{ matrix.bin }}
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
@@ -65,6 +65,8 @@ jobs:
     name: go-release
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
     env:
       EXECUTABLE: bin/pca-linux-amd64/pca-linux-amd64
     steps:
@@ -75,13 +77,11 @@ jobs:
           path: bin
       - name: Make retrieved artifact executable
         run: chmod +x ./${{ env.EXECUTABLE }}
-      - name: Set Tag Version
+      - id: get-version
+        name: Get the con-pca-tasks Version
         run: |
-          echo "VERSION=v$($EXECUTABLE -version)" \
-          >> $GITHUB_ENV
-      - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v3
-        if: env.RUN_TMATE
+          echo "version=$($EXECUTABLE -version)" \
+          >> $GITHUB_OUTPUT
       - name: Create Release
         uses: actions/github-script@v6
         with:
@@ -91,11 +91,11 @@ jobs:
               const response = await github.rest.repos.createRelease({
                 draft: false,
                 generate_release_notes: true,
-                name: `con-pca-tasks ${process.env.VERSION}`,
+                name: `con-pca-tasks v${{ steps.get-version.outputs.version }}`,
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
-                tag_name: process.env.VERSION,
+                tag_name: `v${{ steps.get-version.outputs.version }}`,
               });
               core.exportVariable('RELEASE_ID', response.data.id);
               core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
@@ -122,6 +122,17 @@ jobs:
                 "${UPLOAD_URL}?name=$(basename ${FILE})";
             done
           done
+  dispatch:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          client-payload: '{"version": "${{ needs.release.outputs.version }}" }'
+          event-type: deploy
+          repository: cisagov/con-pca-tasks-docker
+          token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
