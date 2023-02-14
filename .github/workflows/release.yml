@@ -52,7 +52,7 @@ jobs:
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
       - name: Build ${{ matrix.bin }}
-        run: go build -o ${{ matrix.bin }}
+        run: CGO_ENABLED=0 go build -o ${{ matrix.bin }}
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
@@ -78,7 +78,7 @@ jobs:
       - name: Make retrieved artifact executable
         run: chmod +x ./${{ env.EXECUTABLE }}
       - id: get-version
-        name: Set Tag Version
+        name: Get the con-pca-tasks Version
         run: |
           echo "version=$($EXECUTABLE -version)" \
           >> $GITHUB_OUTPUT
@@ -91,7 +91,7 @@ jobs:
               const response = await github.rest.repos.createRelease({
                 draft: false,
                 generate_release_notes: true,
-                name: `con-pca-tasks v${process.env.VERSION}`,
+                name: `con-pca-tasks v${{ steps.get-version.outputs.version }}`,
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
@@ -129,10 +129,10 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
-          repository: cisagov/con-pca-tasks-docker
-          event-type: deploy
           client-payload: '{"version": "${{ needs.release.outputs.version }}" }'
+          event-type: deploy
+          repository: cisagov/con-pca-tasks-docker
+          token: ${{ secrets.CON_PCA_ACCESS_TOKEN }}
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
