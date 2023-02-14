@@ -91,7 +91,7 @@ jobs:
               const response = await github.rest.repos.createRelease({
                 draft: false,
                 generate_release_notes: true,
-                name: `con-pca-tasks v${process.env.VERSION}`,
+                name: `con-pca-tasks v${{ steps.get-version.outputs.version }}`,
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
