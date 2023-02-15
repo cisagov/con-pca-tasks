@@ -13,7 +13,7 @@ func main() {
 	version()
 
 	mux := chi.NewRouter()
-	mux.Get("/", controllers.HealthCheckHandler)
+	mux.Mount("/tasks", controllers.TasksRouter())
 
 	port := ":8080"
 	log.Printf("listening on port %s, version %s", port, Version)

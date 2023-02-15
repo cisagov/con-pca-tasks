@@ -15,25 +15,34 @@ var (
 
 // SESEmail represents an email context
 type SESEmail struct {
-	To      string
-	Cc      string `default:""`
-	Bcc     string `default:""`
-	Subject string
-	Body    string
+	To      string `json:"to"`
+	Cc      string `json:"cc" default:""`
+	Bcc     string `json:"bcc" default:""`
+	Subject string `json:"subject"`
+	Body    string `json:"body"`
 }
 
-// NewSESEmail returns an initialized SES email context
-func NewSESEmail(to, cc, bcc, subject, body string) *SESEmail {
+// NewSESEmail returns an initialized SES email context.
+func NewSESEmail() *SESEmail {
 	// Load assumed user role AWS configuration
 	cfg := AssumedRoleConfig()
 	// Initialize AWS Simple Email Service Client
 	client = sesv2.NewFromConfig(cfg)
-	return &SESEmail{To: to, Cc: cc, Bcc: bcc, Subject: subject, Body: body}
+	return &SESEmail{}
 }
 
-// Send sends an email using AWS SES
+// BuildMessage builds email context.
+func (e *SESEmail) BuildMessage(to, cc, bcc, subject, body string) {
+	e.To = to
+	e.Cc = cc
+	e.Bcc = bcc
+	e.Subject = subject
+	e.Body = body
+}
+
+// Send sends an email using AWS SES.
 func (e *SESEmail) Send() error {
-	// Build email context
+	// Input email content
 	input := &sesv2.SendEmailInput{
 		FromEmailAddress: &from,
 		Destination: &types.Destination{
