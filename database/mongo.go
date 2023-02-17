@@ -29,7 +29,7 @@ func connect() (*mongo.Client, error) {
 	return client, nil
 }
 
-func Client() *mongo.Database {
+func DB() *mongo.Database {
 	client, err := connect()
 	if err != nil {
 		panic(err)
