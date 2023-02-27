@@ -3,12 +3,13 @@ module github.com/cisagov/con-pca-tasks
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.17.4
+	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.12
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.16.1
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.3
 	github.com/go-chi/chi/v5 v5.0.8
+	go.mongodb.org/mongo-driver v1.11.2
 )
 
 require (
@@ -28,7 +29,6 @@ require (
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	go.mongodb.org/mongo-driver v1.11.2 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect
