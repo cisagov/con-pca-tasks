@@ -11,6 +11,7 @@ import (
 
 // healthCheckHandler indicates that the server is up and running.
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	println("Health check reached.")
 	fmt.Fprintf(w, "Up and running!")
 }
 
