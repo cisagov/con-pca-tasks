@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/service/sesv2"
@@ -46,7 +47,8 @@ func (e *SESEmail) Send() error {
 	input := &sesv2.SendEmailInput{
 		FromEmailAddress: &from,
 		Destination: &types.Destination{
-			ToAddresses: []string{e.To},
+			ToAddresses:  []string{e.To},
+			BccAddresses: []string{e.Bcc},
 		},
 		Content: &types.EmailContent{
 			Simple: &types.Message{
@@ -65,9 +67,9 @@ func (e *SESEmail) Send() error {
 	// Send email
 	output, err := client.SendEmail(context.Background(), input)
 	if err != nil {
-		println(err.Error())
+		log.Println("Send email error: ", err.Error())
 		return err
 	}
-	println(output.MessageId)
+	log.Println("Email sent: ", *output.MessageId)
 	return nil
 }

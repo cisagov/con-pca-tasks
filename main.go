@@ -6,13 +6,18 @@ import (
 	"os"
 
 	"github.com/cisagov/con-pca-tasks/controllers"
+	db "github.com/cisagov/con-pca-tasks/database"
 	"github.com/go-chi/chi/v5"
 )
 
 var apiKey string
 
 func init() {
+	// Load the API key from the environment
 	apiKey = os.Getenv("API_ACCESS_KEY")
+
+	// Connect to the database
+	db.DB()
 }
 
 // Auth is a middleware that verifies the API key
