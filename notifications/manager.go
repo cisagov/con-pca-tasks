@@ -26,8 +26,15 @@ func Manager(CycleId, tasktype string) {
 		log.Println("Notification error: ", err.Error())
 	}
 
+	// Initialize an SES email
 	email := aws.NewSESEmail()
+
+	// Render the template
+	tmpl := Template{FirstName: s.PrimaryContact.FirstName, LastName: s.PrimaryContact.LastName}
+	textBody := tmpl.Render(n.Text)
+
+	// Build and send the notification email
+	email.BuildMessage(s.PrimaryContact.Email, "", s.AdminEmail, n.Subject, textBody)
 	log.Printf("Sending email to: %s, bcc: %s", s.PrimaryContact.Email, s.AdminEmail)
-	email.BuildMessage(s.PrimaryContact.Email, "", s.AdminEmail, n.Subject, n.Text)
 	email.Send()
 }
