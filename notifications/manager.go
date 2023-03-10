@@ -56,7 +56,8 @@ func Manager(cycleId, tasktype string) {
 	textHtml := tmpl.Render(n.Html)
 
 	// Build the pdf file
-	pdfFileName := "report.pdf"
+	pdfFileName :=
+		"CISA_PCA_" + tasktype + "_report_" + s.Name + ".pdf"
 	pdfFile, err := generatePDF(cycleId, tasktype)
 	if err != nil {
 		log.Println("Generate PDF error: ", err.Error())
