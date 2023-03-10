@@ -11,10 +11,10 @@ type Template struct {
 	LastName  string
 }
 
-// Render renders the template with the given text.
-func (t *Template) Render(text string) string {
+// Render renders the template with the given string data.
+func (t *Template) Render(data string) string {
 	var buf bytes.Buffer
-	tmpl, err := template.New("template").Parse(text)
+	tmpl, err := template.New("template.html").Parse(data)
 	if err != nil {
 		log.Println(err.Error())
 	}

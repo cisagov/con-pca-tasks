@@ -19,7 +19,7 @@ func emailReportHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	cycleId := chi.URLParam(r, "cycle_id")
-	reportType := chi.URLParam(r, "report_type") + "_report"
+	reportType := chi.URLParam(r, "report_type")
 
 	notifications.Manager(cycleId, reportType)
 	fmt.Fprintf(w, "%s report email sent! Cycle id: %s", reportType, cycleId)

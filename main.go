@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/cisagov/con-pca-tasks/aws"
 	"github.com/cisagov/con-pca-tasks/controllers"
 	db "github.com/cisagov/con-pca-tasks/database"
+	"github.com/cisagov/con-pca-tasks/notifications"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,9 +17,13 @@ var apiKey string
 func init() {
 	// Load the API key from the environment
 	apiKey = os.Getenv("API_ACCESS_KEY")
+	notifications.ApiUrl = os.Getenv("API_URL")
 
 	// Connect to the database
-	db.DB()
+	db.InitDB()
+
+	// Initialize SES email
+	aws.SESEmailClient()
 }
 
 // Auth is a middleware that verifies the API key

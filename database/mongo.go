@@ -37,8 +37,8 @@ func connect() (*mongo.Client, error) {
 	return client, nil
 }
 
-// DB connects to the database and sets the collections
-func DB() {
+// InitDB initializes database connection and sets the collections
+func InitDB() {
 	client, err := connect()
 	if err != nil {
 		panic(err)
