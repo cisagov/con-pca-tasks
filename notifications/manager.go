@@ -1,9 +1,10 @@
 package notifications
 
 import (
-	"bytes"
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/cisagov/con-pca-tasks/aws"
 	"github.com/cisagov/con-pca-tasks/database/collections"
@@ -14,18 +15,26 @@ var (
 )
 
 // generatePDF generates a pdf file from the API
-func generatePDF(cycleId, taskType string) ([]byte, error) {
+func generatePDF(pdfFileName, cycleId, taskType string) error {
+
+	out, err := os.Create(pdfFileName)
+	if err != nil {
+		return err
+	}
+
 	// Get the pdf file from the API
 	resp, err := http.Get(ApiUrl + "/api/cycle/" + cycleId + "/reports/" + taskType + "/pdf/")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
-	// Read the response body
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.Body)
-	return buf.Bytes(), nil
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Manager manages notification emails by task type.
@@ -58,13 +67,13 @@ func Manager(cycleId, tasktype string) {
 	// Build the pdf file
 	pdfFileName :=
 		"CISA_PCA_" + tasktype + "_report_" + s.Name + ".pdf"
-	pdfFile, err := generatePDF(cycleId, tasktype)
+	err = generatePDF(pdfFileName, cycleId, tasktype)
 	if err != nil {
 		log.Println("Generate PDF error: ", err.Error())
 	}
 
 	// Build and send the notification email
-	email.BuildMessage(s.PrimaryContact.Email, "", s.AdminEmail, n.Subject, textHtml, textBody, pdfFileName, pdfFile)
+	email.BuildMessage(s.PrimaryContact.Email, "", s.AdminEmail, n.Subject, textHtml, textBody, pdfFileName)
 	log.Printf("Sending email to: %s, bcc: %s", s.PrimaryContact.Email, s.AdminEmail)
 	email.Send()
 }

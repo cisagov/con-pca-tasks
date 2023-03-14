@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"context"
 	"log"
-	"mime/multipart"
-	"net/textproto"
 	"os"
-	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/sesv2"
 	"github.com/aws/aws-sdk-go-v2/service/sesv2/types"
+	"gopkg.in/gomail.v2"
 )
 
 var (
@@ -20,11 +18,11 @@ var (
 
 // SESEmail represents an email context
 type SESEmail struct {
-	To      string
-	Cc      string
-	Bcc     string
-	Subject string
-	Data    types.RawMessage
+	To       string
+	Cc       string
+	Bcc      string
+	Data     types.RawMessage
+	FileName string
 }
 
 // SESEmailClient initializes the AWS SES client.
@@ -41,86 +39,33 @@ func NewSESEmail() *SESEmail {
 }
 
 // BuildMessage builds email context.
-func (e *SESEmail) BuildMessage(to, cc, bcc, subject, html, text, fileName string, file []byte) {
+func (e *SESEmail) BuildMessage(to, cc, bcc, subject, html, text, fileName string) {
 	e.To = to
 	e.Cc = cc
 	e.Bcc = bcc
-	e.Subject = subject
+	e.FileName = fileName
 
-	// Create a new multipart writer
-	buf := new(bytes.Buffer)
-	writer := multipart.NewWriter(buf)
+	// Initialize new email message
+	msg := gomail.NewMessage()
 
-	// Add email headers
-	h := make(textproto.MIMEHeader)
-	h.Set("From", from)
-	h.Set("To", to)
-	h.Set("CC", cc)
-	h.Set("Return-Path", from)
-	h.Set("Subject", subject)
-	h.Set("Content-Language", "en-US")
-	h.Set("Content-Type", "multipart/mixed; boundary=\""+writer.Boundary()+"\"")
-	h.Set("MIME-Version", "1.0")
-	_, err := writer.CreatePart(h)
-	if err != nil {
-		log.Println("Create header part error: ", err.Error())
-	}
+	// Set email headers
+	msg.SetHeader("To", to)
+	msg.SetHeader("Subject", subject)
 
-	// Text body
-	h = make(textproto.MIMEHeader)
-	h.Set("Content-Transfer-Encoding", "8bit")
-	h.Set("Content-Type", "text/plain; charset=utf-8")
-	part, err := writer.CreatePart(h)
-	if err != nil {
-		log.Println("Create text part error: ", err.Error())
-	}
-	_, err = part.Write([]byte(text))
-	if err != nil {
-		log.Println("Create text part error: ", err.Error())
-	}
+	// Set email body
+	msg.SetBody("text/plain", text)
+	msg.SetBody("text/html", html)
 
-	// HTML body
-	h = make(textproto.MIMEHeader)
-	h.Set("Content-Transfer-Encoding", "quoted-printable")
-	h.Set("Content-Type", "text/html; charset=utf-8")
-	part, err = writer.CreatePart(h)
-	if err != nil {
-		log.Println("Create html part error: ", err.Error())
-	}
-	_, err = part.Write([]byte(html))
-	if err != nil {
-		log.Println("Create html part error: ", err.Error())
-	}
+	// Set email attachment
+	msg.Attach(fileName)
 
-	// File Attachment
-	h = make(textproto.MIMEHeader)
-	h.Set("Content-Disposition", "attachment; filename="+fileName)
-	h.Set("Content-Type", "application/pdf; x-unix-mode=0644; name=\""+fileName+"\"")
-	h.Set("Content-Transfer-Encoding", "quoted-printable")
-	part, err = writer.CreatePart(h)
-	if err != nil {
-		log.Println("Create file attachment part error: ", err.Error())
-	}
-	_, err = part.Write(file)
-	if err != nil {
-		log.Println("Create file attachment part error: ", err.Error())
-	}
+	// Create a new buffer to add raw email data
+	var emailRaw bytes.Buffer
+	msg.WriteTo(&emailRaw)
 
-	// Close multipart writer
-	err = writer.Close()
-	if err != nil {
-		log.Println("Close multipart writer error: ", err.Error())
-	}
-
-	// Get email content
-	s := buf.String()
-	if strings.Count(s, "\n") < 2 {
-		log.Println("Error: invalid e-mail content")
-	}
-	// s = strings.SplitN(s, "\n", 2)[1]
-
+	// Set email data
 	e.Data = types.RawMessage{
-		Data: []byte(s),
+		Data: emailRaw.Bytes(),
 	}
 }
 
@@ -145,5 +90,8 @@ func (e *SESEmail) Send() error {
 		return err
 	}
 	log.Println("Email sent: ", *output.MessageId)
+
+	// Delete attachment
+	os.Remove(e.FileName)
 	return nil
 }
