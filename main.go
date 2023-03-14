@@ -6,9 +6,7 @@ import (
 	"os"
 
 	"github.com/cisagov/con-pca-tasks/controllers"
-	db "github.com/cisagov/con-pca-tasks/database"
 	"github.com/cisagov/con-pca-tasks/notifications"
-	"github.com/cisagov/con-pca-tasks/services/aws"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -18,12 +16,6 @@ func init() {
 	// Load the API key from the environment
 	apiKey = os.Getenv("API_ACCESS_KEY")
 	notifications.ApiUrl = os.Getenv("API_URL")
-
-	// Connect to the database
-	db.InitDB()
-
-	// Initialize SES email
-	aws.SESEmailClient()
 }
 
 // Auth is a middleware that verifies the API key
@@ -42,6 +34,10 @@ func main() {
 	// Print the version and exit if the -version flag is provided
 	version()
 
+	// Initialize clients
+	Init()
+
+	// Create the router
 	r := chi.NewRouter()
 
 	// Protected routes
