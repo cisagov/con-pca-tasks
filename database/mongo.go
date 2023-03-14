@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+var (
+	Ctx                     = context.Background()
+	NotificationsCollection *mongo.Collection
+	PhishesCollection       *mongo.Collection
+	SubscriptionsCollection *mongo.Collection
+	CyclesCollection        *mongo.Collection
+)
+
 func connect() (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -29,10 +37,17 @@ func connect() (*mongo.Client, error) {
 	return client, nil
 }
 
-func DB() *mongo.Database {
+// InitDB initializes database connection and sets the collections
+func InitDB() {
 	client, err := connect()
 	if err != nil {
 		panic(err)
 	}
-	return client.Database("pca")
+	db := client.Database("pca")
+
+	// Set the collections
+	CyclesCollection = db.Collection("cycle")
+	NotificationsCollection = db.Collection("notification")
+	PhishesCollection = db.Collection("template")
+	SubscriptionsCollection = db.Collection("subscription")
 }
