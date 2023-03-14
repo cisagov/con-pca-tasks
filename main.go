@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/cisagov/con-pca-tasks/aws"
 	"github.com/cisagov/con-pca-tasks/controllers"
 	db "github.com/cisagov/con-pca-tasks/database"
 	"github.com/cisagov/con-pca-tasks/notifications"
+	"github.com/cisagov/con-pca-tasks/services/aws"
 	"github.com/go-chi/chi/v5"
 )
 

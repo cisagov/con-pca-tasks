@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/cisagov/con-pca-tasks/aws"
 	"github.com/cisagov/con-pca-tasks/database/collections"
+	"github.com/cisagov/con-pca-tasks/services/aws"
 )
 
 var (
