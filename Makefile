@@ -1,4 +1,4 @@
-.PHONY: help run test tidy
+.PHONY: help run test update tidy version
 include .env
 export
 
@@ -19,6 +19,14 @@ run:
 test:
 	go test -v ./...
 
+# target: update - update all packages
+update:
+	go get all
+
 # target: tidy - add missing necessary modules and remove unused modules
 tidy:
 	go mod tidy
+
+# target: version - show application version
+version:
+	go run *.go -version
