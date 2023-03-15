@@ -11,11 +11,14 @@ import (
 )
 
 var (
-	Ctx                     = context.Background()
-	NotificationsCollection *mongo.Collection
-	PhishesCollection       *mongo.Collection
-	SubscriptionsCollection *mongo.Collection
-	CyclesCollection        *mongo.Collection
+	Ctx                       = context.Background()
+	CustomersCollection       *mongo.Collection
+	CyclesCollection          *mongo.Collection
+	NotificationsCollection   *mongo.Collection
+	PhishesCollection         *mongo.Collection
+	SendingProfilesCollection *mongo.Collection
+	SubscriptionsCollection   *mongo.Collection
+	TargetsCollection         *mongo.Collection
 )
 
 func connect() (*mongo.Client, error) {
@@ -46,8 +49,11 @@ func InitDB() {
 	db := client.Database("pca")
 
 	// Set the collections
+	CustomersCollection = db.Collection("customer")
 	CyclesCollection = db.Collection("cycle")
 	NotificationsCollection = db.Collection("notification")
 	PhishesCollection = db.Collection("template")
+	SendingProfilesCollection = db.Collection("sending_profile")
 	SubscriptionsCollection = db.Collection("subscription")
+	TargetsCollection = db.Collection("target")
 }

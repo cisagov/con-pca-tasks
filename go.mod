@@ -9,6 +9,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.6
 	github.com/go-chi/chi/v5 v5.0.8
+	github.com/google/go-cmp v0.5.8
+	github.com/mailgun/mailgun-go/v3 v3.6.4
 	go.mongodb.org/mongo-driver v1.11.2
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
@@ -22,8 +24,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.12.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.5 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
+	github.com/go-chi/chi v4.0.0+incompatible // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect

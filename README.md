@@ -11,6 +11,7 @@ tasks for Con-PCA at scale.
 
 ## Related Con-PCA Repositories ##
 
+- [con-pca-tasks-docker](https://github.com/cisagov/con-pca-tasks-docker)
 - [con-pca-api](https://github.com/cisagov/con-pca-api)
 - [con-pca-cicd](https://github.com/cisagov/con-pca-cicd)
 - [con-pca-web](https://github.com/cisagov/con-pca-web)
