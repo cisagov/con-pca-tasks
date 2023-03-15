@@ -65,11 +65,11 @@ func GetCycleTargetsForProcessing(cycle_id string) ([]Target, error) {
 	// If cycle is active, return targets
 	if c.Active {
 		filter := bson.D{
-			{"$and",
-				bson.A{
+			{Key: "$and",
+				Value: bson.A{
 					bson.D{{Key: "cycle_id", Value: cycle_id}},
 					bson.D{{Key: "sent", Value: false}},
-					bson.D{{"send_date", bson.D{{"$lte", time.Now()}}}},
+					bson.D{{Key: "send_date", Value: bson.D{{Key: "$lte", Value: time.Now()}}}},
 				},
 			},
 		}
